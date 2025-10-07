@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1/B Sınıfı Öğrenci Takip Sistemi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #36b9cc;
+            --text-color: #5a5c69;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background: var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo i {
+            font-size: 50px;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5fc8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard {
+            display: none;
+            flex: 1;
+        }
+        
+        .dashboard-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+        }
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .student-card {
+            transition: transform 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .student-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .student-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .student-card:hover .student-actions {
+            opacity: 1;
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .assignment-card {
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .portfolio-item {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .badge-custom {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .add-student-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            animation: pulse 2s infinite;
+        }
+        
+        .modal-content {
+            border-radius: 15px;
+        }
+        
+        footer {
+            background: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .student-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .welcome-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .login-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .login-option-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-option-btn.active {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.1);
+        }
+        
+        .parent-login-form {
+            display: none;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .file-upload-area i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .file-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .file-icon {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .announcement-card {
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .view-status {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .viewed-badge {
+            background-color: var(--success-color);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .welcome-text {
+                font-size: 0.9rem;
+            }
+            
+            .student-actions {
+                opacity: 1; /* Always show on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-school"></i>1/B Sınıfı Takip Sistemi
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showDashboard('teacher')">Öğretmen</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showDashboard('parent')">Veli</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">Hakkında</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Giriş Sayfası -->
+    <div id="login-page" class="login-container">
+        <div class="login-card">
+            <div class="logo">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h2 class="mt-3">1/B Sınıfı Takip Sistemi</h2>
+                <p>Öğretmen ve Veli Girişi</p>
+            </div>
+            
+            <div class="login-options">
+                <div class="login-option-btn active" id="teacher-option" onclick="toggleLoginOption('teacher')">
+                    <i class="fas fa-chalkboard-teacher me-1"></i> Öğretmen
+                </div>
+                <div class="login-option-btn" id="parent-option" onclick="toggleLoginOption('parent')">
+                    <i class="fas fa-user me-1"></i> Veli
+                </div>
+            </div>
+            
+            <!-- Öğretmen Giriş Formu -->
+            <div id="teacher-login-form">
+                <div class="mb-3">
+                    <label for="teacher-username" class="form-label">Kullanıcı Adı</label>
+                    <input type="text" class="form-control" id="teacher-username" value="tayfununlu">
+                </div>
+                <div class="mb-3">
+                    <label for="teacher-password" class="form-label">Şifre</label>
+                    <input type="password" class="form-control" id="teacher-password" value="1234">
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary btn-lg" onclick="loginAsTeacher()">
+                        <i class="fas fa-sign-in-alt me-2"></i> Giriş Yap
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Veli Giriş Formu -->
+            <div id="parent-login-form" class="parent-login-form">
+                <div class="mb-3">
+                    <label for="parent-student-id" class="form-label">Öğrenci Numarası</label>
+                    <input type="text" class="form-control" id="parent-student-id" placeholder="Öğrenci numarasını girin">
+                </div>
+                <div class="mb-3">
+                    <label for="parent-password" class="form-label">Veli Şifresi</label>
+                    <input type="password" class="form-control" id="parent-password" placeholder="Velilere verilen şifre">
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary btn-lg" onclick="loginAsParent()">
+                        <i class="fas fa-sign-in-alt me-2"></i> Giriş Yap
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p class="mb-0">Veliler için giriş bilgileri öğretmen tarafından verilecektir.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Öğretmen Paneli -->
+    <div id="teacher-dashboard" class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h2><i class="fas fa-chalkboard-teacher me-2"></i> Öğretmen Paneli</h2>
+                        <p class="mb-0 welcome-text">Hoş geldiniz, Öğretmen Tayfun ÜNLÜ</p>
+                    </div>
+                    <button class="btn btn-light mt-2 mt-md-0" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-1"></i> Çıkış
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <ul class="nav nav-pills mb-4" id="teacherTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="students-tab" data-bs-toggle="pill" data-bs-target="#students" type="button" role="tab">
+                        <i class="fas fa-users me-1"></i> Öğrencilerim
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="assignments-tab" data-bs-toggle="pill" data-bs-target="#assignments" type="button" role="tab">
+                        <i class="fas fa-tasks me-1"></i> Ödevler
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="portfolio-tab" data-bs-toggle="pill" data-bs-target="#portfolio" type="button" role="tab">
+                        <i class="fas fa-folder me-1"></i> Portfolyo
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="announcements-tab" data-bs-toggle="pill" data-bs-target="#announcements" type="button" role="tab">
+                        <i class="fas fa-bullhorn me-1"></i> Duyurular
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="parents-tab" data-bs-toggle="pill" data-bs-target="#parents" type="button" role="tab">
+                        <i class="fas fa-user-friends me-1"></i> Veliler
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="teacherTabContent">
+                <!-- Öğrencilerim Sekmesi -->
+                <div class="tab-pane fade show active" id="students" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Öğrenci Listesi</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                            <i class="fas fa-plus me-1"></i> Yeni Öğrenci Ekle
+                        </button>
+                    </div>
+                    
+                    <div class="row" id="students-container">
+                        <!-- Öğrenci kartları JavaScript ile buraya eklenecek -->
+                    </div>
+                </div>
+
+                <!-- Ödevler Sekmesi -->
+                <div class="tab-pane fade" id="assignments" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Ödev Yönetimi</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
+                            <i class="fas fa-plus me-1"></i> Yeni Ödev Ekle
+                        </button>
+                    </div>
+
+                    <div id="assignments-container">
+                        <!-- Ödevler buraya eklenecek -->
+                    </div>
+                </div>
+
+                <!-- Portfolyo Sekmesi -->
+                <div class="tab-pane fade" id="portfolio" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Portfolyo Değerlendirmeleri</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPortfolioModal">
+                            <i class="fas fa-plus me-1"></i> Yeni Değerlendirme Ekle
+                        </button>
+                    </div>
+
+                    <div id="portfolio-container">
+                        <!-- Portfolyo değerlendirmeleri buraya eklenecek -->
+                    </div>
+                </div>
+
+                <!-- Duyurular Sekmesi -->
+                <div class="tab-pane fade" id="announcements" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Toplu Duyurular</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAnnouncementModal">
+                            <i class="fas fa-plus me-1"></i> Yeni Duyuru Ekle
+                        </button>
+                    </div>
+
+                    <div id="announcements-container">
+                        <!-- Duyurular buraya eklenecek -->
+                    </div>
+                </div>
+
+                <!-- Veliler Sekmesi -->
+                <div class="tab-pane fade" id="parents" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Veli Bilgileri</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#parentAccountsModal">
+                            <i class="fas fa-key me-1"></i> Veli Şifreleri
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Öğrenci</th>
+                                            <th>Veli Adı</th>
+                                            <th>Öğrenci No</th>
+                                            <th>Veli Şifresi</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="parents-table-body">
+                                        <!-- Veli bilgileri JavaScript ile buraya eklenecek -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Öğrenci Ekleme Butonu -->
+        <button class="btn btn-primary add-student-btn" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- Veli Paneli -->
+    <div id="parent-dashboard" class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h2><i class="fas fa-user me-2"></i> Veli Paneli</h2>
+                        <p class="mb-0 welcome-text">Hoş geldiniz, <span id="parent-name">Ahmet Yılmaz</span> (<span id="student-name">Ali</span>'nin Velisi)</p>
+                    </div>
+                    <button class="btn btn-light mt-2 mt-md-0" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-1"></i> Çıkış
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body text-center">
+                            <img id="parent-student-photo" src="https://ui-avatars.com/api/?name=Ali+Yılmaz&background=4e73df&color=fff" class="rounded-circle student-img mb-3" alt="Öğrenci">
+                            <h4 id="parent-student-name">Ali Yılmaz</h4>
+                            <p class="text-muted">1/B Sınıfı</p>
+                            <div class="d-flex justify-content-around mt-4">
+                                <div class="text-center">
+                                    <h5 class="mb-0 stat-number" id="parent-assignment-count">0</h5>
+                                    <small>Ödev</small>
+                                </div>
+                                <div class="text-center">
+                                    <h5 class="mb-0 stat-number" id="parent-activity-count">0</h5>
+                                    <small>Etkinlik</small>
+                                </div>
+                                <div class="text-center">
+                                    <h5 class="mb-0 stat-number" id="parent-evaluation-count">0</h5>
+                                    <small>Değerlendirme</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Son Duyurular</h5>
+                            <div class="mt-3" id="parent-announcements-container">
+                                <!-- Duyurular buraya eklenecek -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Aktif Ödevler</h5>
+                            <div id="parent-assignments-container">
+                                <!-- Velinin ödevleri buraya eklenecek -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Portfolyo Değerlendirmesi</h5>
+                            <div class="mt-3" id="parent-portfolio-container">
+                                <!-- Velinin portfolyo değerlendirmeleri buraya eklenecek -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Öğrenci Ekleme Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStudentModalLabel">Yeni Öğrenci Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentForm">
+                        <div class="mb-3">
+                            <label for="studentName" class="form-label">Öğrenci Adı *</label>
+                            <input type="text" class="form-control" id="studentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentSurname" class="form-label">Öğrenci Soyadı *</label>
+                            <input type="text" class="form-control" id="studentSurname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="parentName" class="form-label">Veli Adı *</label>
+                            <input type="text" class="form-control" id="parentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="parentPhone" class="form-label">Veli Telefon</label>
+                            <input type="tel" class="form-control" id="parentPhone" placeholder="05XX XXX XX XX">
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentPhoto" class="form-label">Öğrenci Fotoğrafı (URL)</label>
+                            <input type="text" class="form-control" id="studentPhoto" placeholder="https://...">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="addStudent()">Öğrenci Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ödev Ekleme Modal -->
+    <div class="modal fade" id="addAssignmentModal" tabindex="-1" aria-labelledby="addAssignmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAssignmentModalLabel">Yeni Ödev Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAssignmentForm">
+                        <div class="mb-3">
+                            <label for="assignmentTitle" class="form-label">Ödev Başlığı *</label>
+                            <input type="text" class="form-control" id="assignmentTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignmentDescription" class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="assignmentDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignmentDueDate" class="form-label">Son Teslim Tarihi</label>
+                            <input type="date" class="form-control" id="assignmentDueDate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignmentStudent" class="form-label">Öğrenci *</label>
+                            <select class="form-select" id="assignmentStudent" required>
+                                <option value="">Öğrenci seçin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dosya Ekle</label>
+                            <div class="file-upload-area" onclick="document.getElementById('assignmentFileInput').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Dosya yüklemek için tıklayın veya sürükleyin</p>
+                                <small class="text-muted">PDF, Word, Excel, resim dosyaları (Max 10MB)</small>
+                                <input type="file" id="assignmentFileInput" style="display: none" onchange="handleAssignmentFileSelect(this)">
+                            </div>
+                            <div id="assignmentFilePreview" class="file-preview">
+                                <!-- Dosya önizleme buraya eklenecek -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="addAssignment()">Ödev Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolyo Değerlendirme Ekleme Modal -->
+    <div class="modal fade" id="addPortfolioModal" tabindex="-1" aria-labelledby="addPortfolioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPortfolioModalLabel">Yeni Portfolyo Değerlendirmesi Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPortfolioForm">
+                        <div class="mb-3">
+                            <label for="portfolioStudent" class="form-label">Öğrenci *</label>
+                            <select class="form-select" id="portfolioStudent" required>
+                                <option value="">Öğrenci seçin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="portfolioDate" class="form-label">Değerlendirme Tarihi *</label>
+                            <input type="date" class="form-control" id="portfolioDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="portfolioCategory" class="form-label">Değerlendirme Kategorisi</label>
+                            <select class="form-select" id="portfolioCategory">
+                                <option value="academic">Akademik Gelişim</option>
+                                <option value="social">Sosyal Gelişim</option>
+                                <option value="behavior">Davranış</option>
+                                <option value="other">Diğer</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="portfolioNotes" class="form-label">Değerlendirme Notları *</label>
+                            <textarea class="form-control" id="portfolioNotes" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dosya Ekle</label>
+                            <div class="file-upload-area" onclick="document.getElementById('portfolioFileInput').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Dosya yüklemek için tıklayın veya sürükleyin</p>
+                                <small class="text-muted">PDF, Word, Excel, resim dosyaları (Max 10MB)</small>
+                                <input type="file" id="portfolioFileInput" style="display: none" onchange="handlePortfolioFileSelect(this)">
+                            </div>
+                            <div id="portfolioFilePreview" class="file-preview">
+                                <!-- Dosya önizleme buraya eklenecek -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="addPortfolio()">Değerlendirme Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duyuru Ekleme Modal -->
+    <div class="modal fade" id="addAnnouncementModal" tabindex="-1" aria-labelledby="addAnnouncementModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAnnouncementModalLabel">Yeni Duyuru Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAnnouncementForm">
+                        <div class="mb-3">
+                            <label for="announcementTitle" class="form-label">Duyuru Başlığı *</label>
+                            <input type="text" class="form-control" id="announcementTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="announcementContent" class="form-label">Duyuru İçeriği *</label>
+                            <textarea class="form-control" id="announcementContent" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dosya Ekle</label>
+                            <div class="file-upload-area" onclick="document.getElementById('announcementFileInput').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Dosya yüklemek için tıklayın veya sürükleyin</p>
+                                <small class="text-muted">PDF, Word, Excel, resim dosyaları (Max 10MB)</small>
+                                <input type="file" id="announcementFileInput" style="display: none" onchange="handleAnnouncementFileSelect(this)">
+                            </div>
+                            <div id="announcementFilePreview" class="file-preview">
+                                <!-- Dosya önizleme buraya eklenecek -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="addAnnouncement()">Duyuru Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Veli Şifreleri Modal -->
+    <div class="modal fade" id="parentAccountsModal" tabindex="-1" aria-labelledby="parentAccountsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="parentAccountsModalLabel">Veli Erişim Bilgileri</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Veliler öğrenci numarası ve şifre ile giriş yapabilirler.
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Öğrenci</th>
+                                    <th>Öğrenci No</th>
+                                    <th>Veli Şifresi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parent-access-table">
+                                <!-- Veli erişim bilgileri JavaScript ile buraya eklenecek -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Silme Onay Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Öğrenci Silme</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteConfirmText">Öğrenciyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aboutModalLabel">Sistem Hakkında</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-school feature-icon"></i>
+                        <h3>1/B Sınıfı Öğrenci Takip Sistemi</h3>
+                    </div>
+                    <p>Bu sistem, 1. sınıf öğretmenlerinin öğrenci portfolyolarını değerlendirmesi ve kişiye özel ödevler hazırlaması için tasarlanmıştır.</p>
+                    
+                    <h5>Özellikler:</h5>
+                    <ul>
+                        <li>Öğrenci ekleme, düzenleme ve silme</li>
+                        <li>Ödev takip sistemi</li>
+                        <li>Portfolyo değerlendirmeleri</li>
+                        <li>Veli erişimi ve takibi</li>
+                        <li>Dosya yükleme özelliği</li>
+                        <li>Toplu duyuru sistemi</li>
+                        <li>Mobil uyumlu tasarım</li>
+                    </ul>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Öğretmen: Tayfun ÜNLÜ<br>
+                        Sınıf: 1/B
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">© 2023 1/B Sınıfı Öğrenci Takip Sistemi - Öğretmen: Tayfun ÜNLÜ</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Öğrenci listenize göre öğrenci verileri
+        let students = [
+            { 
+                id: 1, 
+                name: "LİDER", 
+                surname: "KARABACAK", 
+                parent: "", 
+                phone: "", 
+                photo: "https://ui-avatars.com/api/?name=Lider+Karabacak&background=4e73df&color=fff",
+                studentId: "16",
+                parentPassword: "lider16"
+            },
+            { 
+                id: 2, 
+                name: "EYMEN", 
+                surname: "YURTGÜL", 
+                parent: "", 
+                phone: "", 
+                photo: "https://ui-avatars.com/api/?name=Eymen+Yurtgul&background=36b9cc&color=fff",
+                studentId: "31",
+                parentPassword: "eymen31"
+            },
+            // Diğer öğrenciler buraya eklenecek (toplam 20 öğrenci)
+        ];
+
+        // Ödevler, portfolyo değerlendirmeleri ve duyurular
+        let assignments = [];
+        let portfolioItems = [];
+        let announcements = [];
+        
+        // Dosya yükleme için geçici depolama
+        let assignmentFiles = [];
+        let portfolioFiles = [];
+        let announcementFiles = [];
+        
+        let currentDeleteId = null;
+        let currentUser = null;
+        
+        // Sayfa yüklendiğinde
+        window.onload = function() {
+            renderStudents();
+            renderParentAccessTable();
+            renderAssignments();
+            renderPortfolioItems();
+            renderAnnouncements();
+            document.querySelector('.navbar').style.display = 'none';
+            document.querySelector('footer').style.display = 'none';
+        }
+        
+        function toggleLoginOption(option) {
+            document.getElementById('teacher-option').classList.toggle('active', option === 'teacher');
+            document.getElementById('parent-option').classList.toggle('active', option === 'parent');
+            document.getElementById('teacher-login-form').style.display = option === 'teacher' ? 'block' : 'none';
+            document.getElementById('parent-login-form').style.display = option === 'parent' ? 'block' : 'none';
+        }
+        
+        function loginAsTeacher() {
+            const username = document.getElementById('teacher-username').value;
+            const password = document.getElementById('teacher-password').value;
+            
+            if (username === 'tayfununlu' && password === '1234') {
+                currentUser = { type: 'teacher', name: 'Öğretmen Tayfun ÜNLÜ' };
+                showDashboard('teacher');
+            } else {
+                alert('Kullanıcı adı veya şifre hatalı!');
+            }
+        }
+        
+        function loginAsParent() {
+            const studentId = document.getElementById('parent-student-id').value;
+            const password = document.getElementById('parent-password').value;
+            
+            const student = students.find(s => s.studentId === studentId && s.parentPassword === password);
+            
+            if (student) {
+                currentUser = { 
+                    type: 'parent', 
+                    name: student.parent || "Veli",
+                    studentId: student.id,
+                    studentName: `${student.name} ${student.surname}`
+                };
+                
+                // Veli panelindeki bilgileri güncelle
+                document.getElementById('parent-name').textContent = student.parent || "Veli";
+                document.getElementById('student-name').textContent = student.name;
+                document.getElementById('parent-student-name').textContent = `${student.name} ${student.surname}`;
+                document.getElementById('parent-student-photo').src = student.photo;
+                
+                // İstatistikleri güncelle
+                updateParentStatistics(student.id);
+                
+                showDashboard('parent');
+            } else {
+                alert('Öğrenci numarası veya şifre hatalı!');
+            }
+        }
+        
+        function updateParentStatistics(studentId) {
+            // Ödev sayısını hesapla
+            const assignmentCount = assignments.filter(a => a.studentId === studentId).length;
+            document.getElementById('parent-assignment-count').textContent = assignmentCount;
+            
+            // Portfolyo değerlendirme sayısını hesapla
+            const evaluationCount = portfolioItems.filter(p => p.studentId === studentId).length;
+            document.getElementById('parent-evaluation-count').textContent = evaluationCount;
+            
+            // Aktif ödevleri göster
+            renderParentAssignments(studentId);
+            
+            // Portfolyo değerlendirmelerini göster
+            renderParentPortfolio(studentId);
+            
+            // Duyuruları göster
+            renderParentAnnouncements();
+        }
+        
+        function showDashboard(type) {
+            document.getElementById('login-page').style.display = 'none';
+            document.querySelector('.navbar').style.display = 'flex';
+            document.querySelector('footer').style.display = 'block';
+            
+            if (type === 'teacher') {
+                document.getElementById('teacher-dashboard').style.display = 'block';
+                document.getElementById('parent-dashboard').style.display = 'none';
+                renderStudents();
+                renderAssignments();
+                renderPortfolioItems();
+                renderAnnouncements();
+                populateStudentSelects();
+            } else {
+                document.getElementById('teacher-dashboard').style.display = 'none';
+                document.getElementById('parent-dashboard').style.display = 'block';
+            }
+            
+            // Sayfanın başına scroll et
+            window.scrollTo(0, 0);
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('teacher-dashboard').style.display = 'none';
+            document.getElementById('parent-dashboard').style.display = 'none';
+            document.querySelector('.navbar').style.display = 'none';
+            document.querySelector('footer').style.display = 'none';
+            
+            // Formları temizle
+            document.getElementById('teacher-username').value = 'tayfununlu';
+            document.getElementById('teacher-password').value = '1234';
+            document.getElementById('parent-student-id').value = '';
+            document.getElementById('parent-password').value = '';
+        }
+        
+        function renderStudents() {
+            const container = document.getElementById('students-container');
+            const parentsTable = document.getElementById('parents-table-body');
+            
+            container.innerHTML = '';
+            parentsTable.innerHTML = '';
+            
+            if (students.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Henüz öğrenci eklenmemiş</h5>
+                        <p>Yeni öğrenci eklemek için sağ alt köşedeki + butonunu kullanın</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            students.forEach(student => {
+                // Öğrenci kartı oluştur
+                const studentCard = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card student-card">
+                            <div class="student-actions">
+                                <button class="btn btn-sm btn-light" onclick="editStudent(${student.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-light" onclick="deleteStudent(${student.id})">
+                                    <i class="fas fa-trash text-danger"></i>
+                                </button>
+                            </div>
+                            <div class="card-body text-center">
+                                <img src="${student.photo}" class="rounded-circle student-img" alt="${student.name} ${student.surname}">
+                                <h5 class="mt-3">${student.name} ${student.surname}</h5>
+                                <p class="text-muted">${student.parent ? 'Velisi: ' + student.parent : 'Veli bilgisi eklenmemiş'}</p>
+                                ${student.phone ? `<p class="text-muted"><i class="fas fa-phone me-1"></i>${student.phone}</p>` : ''}
+                                <p class="text-muted"><i class="fas fa-id-card me-1"></i>Öğrenci No: ${student.studentId}</p>
+                                <div class="d-grid">
+                                    <button class="btn btn-sm btn-outline-primary">Detaylı Görüntüle</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += studentCard;
+                
+                // Veli tablosu için satır oluştur
+                const parentRow = `
+                    <tr>
+                        <td>${student.name} ${student.surname}</td>
+                        <td>${student.parent || "Belirtilmemiş"}</td>
+                        <td>${student.studentId}</td>
+                        <td>${student.parentPassword}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="regeneratePassword(${student.id})">
+                                <i class="fas fa-sync me-1"></i>Şifre Yenile
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                parentsTable.innerHTML += parentRow;
+            });
+        }
+        
+        function renderAssignments() {
+            const container = document.getElementById('assignments-container');
+            container.innerHTML = '';
+            
+            if (assignments.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-3">
+                        <p class="text-muted">Henüz ödev eklenmemiş</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            assignments.forEach(assignment => {
+                const student = students.find(s => s.id === assignment.studentId);
+                if (!student) return;
+                
+                const statusBadge = assignment.status === 'completed' ? 
+                    '<span class="badge bg-success">Tamamlandı</span>' : 
+                    '<span class="badge bg-warning text-dark">Devam Ediyor</span>';
+                
+                const filesHtml = assignment.files && assignment.files.length > 0 ? 
+                    `<div class="mt-2">
+                        <strong>Ekli Dosyalar:</strong>
+                        <div class="mt-1">
+                            ${assignment.files.map(file => `
+                                <div class="file-item">
+                                    <div>
+                                        <i class="fas fa-file ${getFileIcon(file.type)} me-2"></i>
+                                        <span>${file.name}</span>
+                                    </div>
+                                    <a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : '';
+                
+                const viewStatus = assignment.viewedBy && assignment.viewedBy.length > 0 ?
+                    `<div class="view-status mt-2">
+                        <i class="fas fa-eye me-1"></i>
+                        ${assignment.viewedBy.length} veli görüntüledi
+                    </div>` : '';
+                
+                const assignmentCard = `
+                    <div class="card assignment-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5>${assignment.title}</h5>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-muted">Öğrenci: ${student.name} ${student.surname}</p>
+                            ${assignment.dueDate ? `<p class="text-muted">Son Teslim: ${formatDate(assignment.dueDate)}</p>` : ''}
+                            <p>${assignment.description}</p>
+                            ${filesHtml}
+                            ${viewStatus}
+                            <div class="d-flex justify-content-end mt-3">
+                                <button class="btn btn-sm btn-outline-primary me-2" onclick="editAssignment(${assignment.id})">
+                                    <i class="fas fa-edit me-1"></i>Düzenle
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteAssignment(${assignment.id})">
+                                    <i class="fas fa-trash me-1"></i>Sil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += assignmentCard;
+            });
+        }
+        
+        function renderPortfolioItems() {
+            const container = document.getElementById('portfolio-container');
+            container.innerHTML = '';
+            
+            if (portfolioItems.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-3">
+                        <p class="text-muted">Henüz portfolyo değerlendirmesi eklenmemiş</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            portfolioItems.forEach(item => {
+                const student = students.find(s => s.id === item.studentId);
+                if (!student) return;
+                
+                const categoryText = {
+                    'academic': 'Akademik Gelişim',
+                    'social': 'Sosyal Gelişim',
+                    'behavior': 'Davranış',
+                    'other': 'Diğer'
+                }[item.category] || 'Diğer';
+                
+                const filesHtml = item.files && item.files.length > 0 ? 
+                    `<div class="mt-2">
+                        <strong>Ekli Dosyalar:</strong>
+                        <div class="mt-1">
+                            ${item.files.map(file => `
+                                <div class="file-item">
+                                    <div>
+                                        <i class="fas fa-file ${getFileIcon(file.type)} me-2"></i>
+                                        <span>${file.name}</span>
+                                    </div>
+                                    <a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : '';
+                
+                const viewStatus = item.viewedBy && item.viewedBy.length > 0 ?
+                    `<div class="view-status mt-2">
+                        <i class="fas fa-eye me-1"></i>
+                        ${item.viewedBy.length} veli görüntüledi
+                    </div>` : '';
+                
+                const portfolioCard = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Öğrenci: ${student.name} ${student.surname}</h5>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <p><strong>Değerlendirme Tarihi:</strong> ${formatDate(item.date)}</p>
+                                    <p><strong>Kategori:</strong> ${categoryText}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="portfolio-item bg-light p-3">
+                                        <p class="mb-0">${item.notes}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            ${filesHtml}
+                            ${viewStatus}
+                            <div class="d-flex justify-content-end mt-3">
+                                <button class="btn btn-sm btn-outline-primary me-2" onclick="editPortfolioItem(${item.id})">
+                                    <i class="fas fa-edit me-1"></i>Düzenle
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deletePortfolioItem(${item.id})">
+                                    <i class="fas fa-trash me-1"></i>Sil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += portfolioCard;
+            });
+        }
+        
+        function renderAnnouncements() {
+            const container = document.getElementById('announcements-container');
+            container.innerHTML = '';
+            
+            if (announcements.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-3">
+                        <p class="text-muted">Henüz duyuru eklenmemiş</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            announcements.forEach(announcement => {
+                const filesHtml = announcement.files && announcement.files.length > 0 ? 
+                    `<div class="mt-2">
+                        <strong>Ekli Dosyalar:</strong>
+                        <div class="mt-1">
+                            ${announcement.files.map(file => `
+                                <div class="file-item">
+                                    <div>
+                                        <i class="fas fa-file ${getFileIcon(file.type)} me-2"></i>
+                                        <span>${file.name}</span>
+                                    </div>
+                                    <a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : '';
+                
+                const viewStatus = announcement.viewedBy && announcement.viewedBy.length > 0 ?
+                    `<div class="view-status mt-2">
+                        <i class="fas fa-eye me-1"></i>
+                        ${announcement.viewedBy.length} veli görüntüledi
+                    </div>` : '';
+                
+                const announcementCard = `
+                    <div class="card announcement-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5>${announcement.title}</h5>
+                                <span class="badge bg-info">${formatDate(announcement.date)}</span>
+                            </div>
+                            <p class="mt-2">${announcement.content}</p>
+                            ${filesHtml}
+                            ${viewStatus}
+                            <div class="d-flex justify-content-end mt-3">
+                                <button class="btn btn-sm btn-outline-primary me-2" onclick="editAnnouncement(${announcement.id})">
+                                    <i class="fas fa-edit me-1"></i>Düzenle
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteAnnouncement(${announcement.id})">
+                                    <i class="fas fa-trash me-1"></i>Sil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += announcementCard;
+            });
+        }
+        
+        function renderParentAssignments(studentId) {
+            const container = document.getElementById('parent-assignments-container');
+            container.innerHTML = '';
+            
+            const studentAssignments = assignments.filter(a => a.studentId === studentId);
+            
+            if (studentAssignments.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-3">
+                        <p class="text-muted">Henüz ödev bulunmuyor</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            studentAssignments.forEach(assignment => {
+                const statusBadge = assignment.status === 'completed' ? 
+                    '<span class="badge bg-success">Tamamlandı</span>' : 
+                    '<span class="badge bg-warning text-dark">Devam Ediyor</span>';
+                
+                const filesHtml = assignment.files && assignment.files.length > 0 ? 
+                    `<div class="mt-2">
+                        <strong>Ekli Dosyalar:</strong>
+                        <div class="mt-1">
+                            ${assignment.files.map(file => `
+                                <div class="file-item">
+                                    <div>
+                                        <i class="fas fa-file ${getFileIcon(file.type)} me-2"></i>
+                                        <span>${file.name}</span>
+                                    </div>
+                                    <a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : '';
+                
+                const assignmentCard = `
+                    <div class="assignment-card bg-light p-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <h6>${assignment.title}</h6>
+                            ${statusBadge}
+                        </div>
+                        ${assignment.dueDate ? `<p class="mb-1 text-muted">Son Teslim: ${formatDate(assignment.dueDate)}</p>` : ''}
+                        <p class="mb-2">${assignment.description}</p>
+                        ${filesHtml}
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary" onclick="markAssignmentAsViewed(${assignment.id})">
+                                <i class="fas fa-check me-1"></i> Görüldü Olarak İşaretle
+                            </button>
+                            <button class="btn btn-sm btn-outline-success ms-2">
+                                <i class="fas fa-paperclip me-1"></i> Ödevi Yükle
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += assignmentCard;
+            });
+        }
+        
+        function renderParentPortfolio(studentId) {
+            const container = document.getElementById('parent-portfolio-container');
+            container.innerHTML = '';
+            
+            const studentPortfolio = portfolioItems.filter(p => p.studentId === studentId);
+            
+            if (studentPortfolio.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-3">
+                        <p class="text-muted">Henüz portfolyo değerlendirmesi bulunmuyor</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Gelişim raporu grafikleri
+            container.innerHTML = `
+                <h6>Gelişim Raporu</h6>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Okuma Yazmaya Hazırlık</label>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Matematik Becerileri</label>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Sosyal Gelişim</label>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Öz Bakım Becerileri</label>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 70%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6>Öğretmen Yorumları</h6>
+            `;
+            
+            studentPortfolio.forEach(item => {
+                const filesHtml = item.files && item.files.length > 0 ? 
+                    `<div class="mt-2">
+                        <strong>Ekli Dosyalar:</strong>
+                        <div class="mt-1">
+                            ${item.files.map(file => `
+                                <div class="file-item">
+                                    <div>
+                                        <i class="fas fa-file ${getFileIcon(file.type)} me-2"></i>
+                                        <span>${file.name}</span>
+                                    </div>
+                                    <a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : '';
+                
+                const portfolioItem = `
+                    <div class="portfolio-item bg-light p-3 mt-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <p class="mb-1"><strong>${formatDate(item.date)}</strong></p>
+                            <button class="btn btn-sm btn-outline-primary" onclick="markPortfolioAsViewed(${item.id})">
+                                <i class="fas fa-check me-1"></i> Görüldü
+                            </button>
+                        </div>
+                        <p class="mb-2">${item.notes}</p>
+                        ${filesHtml}
+                    </div>
+                `;
+                container.innerHTML += portfolioItem;
+            });
+        }
+        
+        function renderParentAnnouncements() {
+            const container = document.getElementById('parent-announcements-container');
+            container.innerHTML = '';
+            
+            if (announcements.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-3">
+                        <p class="text-muted">Henüz duyuru bulunmuyor</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            announcements.forEach(announcement => {
+                const filesHtml = announcement.files && announcement.files.length > 0 ? 
+                    `<div class="mt-2">
+                        <strong>Ekli Dosyalar:</strong>
+                        <div class="mt-1">
+                            ${announcement.files.map(file => `
+                                <div class="file-item">
+                                    <div>
+                                        <i class="fas fa-file ${getFileIcon(file.type)} me-2"></i>
+                                        <span>${file.name}</span>
+                                    </div>
+                                    <a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : '';
+                
+                const announcementElement = `
+                    <div class="alert alert-info p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>${formatDate(announcement.date)} - ${announcement.title}</strong>
+                                <p class="mb-1 mt-2">${announcement.content}</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="markAnnouncementAsViewed(${announcement.id})">
+                                <i class="fas fa-check me-1"></i> Görüldü
+                            </button>
+                        </div>
+                        ${filesHtml}
+                    </div>
+                `;
+                container.innerHTML += announcementElement;
+            });
+        }
+        
+        function renderParentAccessTable() {
+            const table = document.getElementById('parent-access-table');
+            table.innerHTML = '';
+            
+            students.forEach(student => {
+                const row = `
+                    <tr>
+                        <td>${student.name} ${student.surname}</td>
+                        <td>${student.studentId}</td>
+                        <td>${student.parentPassword}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="regeneratePassword(${student.id})">
+                                <i class="fas fa-sync me-1"></i>Yenile
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                table.innerHTML += row;
+            });
+        }
+        
+        function populateStudentSelects() {
+            const assignmentSelect = document.getElementById('assignmentStudent');
+            const portfolioSelect = document.getElementById('portfolioStudent');
+            
+            assignmentSelect.innerHTML = '<option value="">Öğrenci seçin</option>';
+            portfolioSelect.innerHTML = '<option value="">Öğrenci seçin</option>';
+            
+            students.forEach(student => {
+                const option = `<option value="${student.id}">${student.name} ${student.surname} (No: ${student.studentId})</option>`;
+                assignmentSelect.innerHTML += option;
+                portfolioSelect.innerHTML += option;
+            });
+        }
+        
+        // Dosya yükleme işlevleri
+        function handleAssignmentFileSelect(input) {
+            handleFileSelect(input, 'assignment');
+        }
+        
+        function handlePortfolioFileSelect(input) {
+            handleFileSelect(input, 'portfolio');
+        }
+        
+        function handleAnnouncementFileSelect(input) {
+            handleFileSelect(input, 'announcement');
+        }
+        
+        function handleFileSelect(input, type) {
+            const files = input.files;
+            const previewArea = document.getElementById(`${type}FilePreview`);
+            previewArea.innerHTML = '';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileURL = URL.createObjectURL(file);
+                
+                // Dosyayı geçici depolamaya ekle
+                if (type === 'assignment') {
+                    assignmentFiles.push({
+                        name: file.name,
+                        type: file.type,
+                        url: fileURL
+                    });
+                } else if (type === 'portfolio') {
+                    portfolioFiles.push({
+                        name: file.name,
+                        type: file.type,
+                        url: fileURL
+                    });
+                } else if (type === 'announcement') {
+                    announcementFiles.push({
+                        name: file.name,
+                        type: file.type,
+                        url: fileURL
+                    });
+                }
+                
+                // Önizleme oluştur
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div>
+                        <i class="fas fa-file ${getFileIcon(file.type)} file-icon"></i>
+                        <span>${file.name}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${type}', ${i})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                previewArea.appendChild(fileItem);
+            }
+        }
+        
+        function removeFile(type, index) {
+            if (type === 'assignment') {
+                assignmentFiles.splice(index, 1);
+                renderFilePreview('assignment', assignmentFiles);
+            } else if (type === 'portfolio') {
+                portfolioFiles.splice(index, 1);
+                renderFilePreview('portfolio', portfolioFiles);
+            } else if (type === 'announcement') {
+                announcementFiles.splice(index, 1);
+                renderFilePreview('announcement', announcementFiles);
+            }
+        }
+        
+        function renderFilePreview(type, files) {
+            const previewArea = document.getElementById(`${type}FilePreview`);
+            previewArea.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div>
+                        <i class="fas fa-file ${getFileIcon(file.type)} file-icon"></i>
+                        <span>${file.name}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${type}', ${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                previewArea.appendChild(fileItem);
+            });
+        }
+        
+        function getFileIcon(fileType) {
+            if (fileType.includes('pdf')) return 'fa-file-pdf text-danger';
+            if (fileType.includes('image')) return 'fa-file-image text-primary';
+            if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word text-primary';
+            if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel text-success';
+            return 'fa-file text-secondary';
+        }
+        
+        // Görüntüleme durumu işlevleri
+        function markAssignmentAsViewed(assignmentId) {
+            const assignment = assignments.find(a => a.id === assignmentId);
+            if (assignment && currentUser && currentUser.studentId) {
+                if (!assignment.viewedBy) assignment.viewedBy = [];
+                if (!assignment.viewedBy.includes(currentUser.studentId)) {
+                    assignment.viewedBy.push(currentUser.studentId);
+                    alert('Ödev görüldü olarak işaretlendi!');
+                    renderParentAssignments(currentUser.studentId);
+                }
+            }
+        }
+        
+        function markPortfolioAsViewed(portfolioId) {
+            const portfolio = portfolioItems.find(p => p.id === portfolioId);
+            if (portfolio && currentUser && currentUser.studentId) {
+                if (!portfolio.viewedBy) portfolio.viewedBy = [];
+                if (!portfolio.viewedBy.includes(currentUser.studentId)) {
+                    portfolio.viewedBy.push(currentUser.studentId);
+                    alert('Portfolyo değerlendirmesi görüldü olarak işaretlendi!');
+                    renderParentPortfolio(currentUser.studentId);
+                }
+            }
+        }
+        
+        function markAnnouncementAsViewed(announcementId) {
+            const announcement = announcements.find(a => a.id === announcementId);
+            if (announcement && currentUser && currentUser.studentId) {
+                if (!announcement.viewedBy) announcement.viewedBy = [];
+                if (!announcement.viewedBy.includes(currentUser.studentId)) {
+                    announcement.viewedBy.push(currentUser.studentId);
+                    alert('Duyuru görüldü olarak işaretlendi!');
+                    renderParentAnnouncements();
+                }
+            }
+        }
+        
+        function addStudent() {
+            const name = document.getElementById('studentName').value;
+            const surname = document.getElementById('studentSurname').value;
+            const parent = document.getElementById('parentName').value;
+            const phone = document.getElementById('parentPhone').value;
+            let photo = document.getElementById('studentPhoto').value;
+            
+            if (!name || !surname || !parent) {
+                alert('Lütfen zorunlu alanları doldurunuz!');
+                return;
+            }
+            
+            if (!photo) {
+                // Rastgele renk için
+                const colors = ['4e73df', '36b9cc', '1cc88a', 'f6c23e', 'e74a3b'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                photo = `https://ui-avatars.com/api/?name=${name}+${surname}&background=${randomColor}&color=fff`;
+            }
+            
+            // Öğrenci numarası oluştur
+            const studentId = generateStudentId();
+            // Rastgele şifre oluştur
+            const parentPassword = generatePassword(name.toLowerCase(), studentId);
+            
+            const newStudent = {
+                id: students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1,
+                name,
+                surname,
+                parent,
+                phone,
+                photo,
+                studentId,
+                parentPassword
+            };
+            
+            students.push(newStudent);
+            renderStudents();
+            renderParentAccessTable();
+            populateStudentSelects();
+            
+            // Modal'ı kapat ve formu temizle
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
+            modal.hide();
+            document.getElementById('addStudentForm').reset();
+            
+            alert('Öğrenci başarıyla eklendi! Veli şifresi: ' + parentPassword);
+        }
+        
+        function addAssignment() {
+            const title = document.getElementById('assignmentTitle').value;
+            const description = document.getElementById('assignmentDescription').value;
+            const dueDate = document.getElementById('assignmentDueDate').value;
+            const studentId = parseInt(document.getElementById('assignmentStudent').value);
+            
+            if (!title || !studentId) {
+                alert('Lütfen zorunlu alanları doldurunuz!');
+                return;
+            }
+            
+            const newAssignment = {
+                id: assignments.length > 0 ? Math.max(...assignments.map(a => a.id)) + 1 : 1,
+                studentId,
+                title,
+                description,
+                dueDate,
+                status: "in-progress",
+                files: [...assignmentFiles], // Dosyaları kopyala
+                viewedBy: []
+            };
+            
+            assignments.push(newAssignment);
+            assignmentFiles = []; // Geçici dosya deposunu temizle
+            renderAssignments();
+            
+            // Modal'ı kapat ve formu temizle
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addAssignmentModal'));
+            modal.hide();
+            document.getElementById('addAssignmentForm').reset();
+            document.getElementById('assignmentFilePreview').innerHTML = '';
+            
+            alert('Ödev başarıyla eklendi!');
+        }
+        
+        function addPortfolio() {
+            const studentId = parseInt(document.getElementById('portfolioStudent').value);
+            const date = document.getElementById('portfolioDate').value;
+            const category = document.getElementById('portfolioCategory').value;
+            const notes = document.getElementById('portfolioNotes').value;
+            
+            if (!studentId || !date || !notes) {
+                alert('Lütfen zorunlu alanları doldurunuz!');
+                return;
+            }
+            
+            const newPortfolioItem = {
+                id: portfolioItems.length > 0 ? Math.max(...portfolioItems.map(p => p.id)) + 1 : 1,
+                studentId,
+                date,
+                category,
+                notes,
+                files: [...portfolioFiles], // Dosyaları kopyala
+                viewedBy: []
+            };
+            
+            portfolioItems.push(newPortfolioItem);
+            portfolioFiles = []; // Geçici dosya deposunu temizle
+            renderPortfolioItems();
+            
+            // Modal'ı kapat ve formu temizle
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addPortfolioModal'));
+            modal.hide();
+            document.getElementById('addPortfolioForm').reset();
+            document.getElementById('portfolioFilePreview').innerHTML = '';
+            
+            alert('Portfolyo değerlendirmesi başarıyla eklendi!');
+        }
+        
+        function addAnnouncement() {
+            const title = document.getElementById('announcementTitle').value;
+            const content = document.getElementById('announcementContent').value;
+            
+            if (!title || !content) {
+                alert('Lütfen zorunlu alanları doldurunuz!');
+                return;
+            }
+            
+            const newAnnouncement = {
+                id: announcements.length > 0 ? Math.max(...announcements.map(a => a.id)) + 1 : 1,
+                date: new Date().toISOString().split('T')[0],
+                title,
+                content,
+                files: [...announcementFiles], // Dosyaları kopyala
+                viewedBy: []
+            };
+            
+            announcements.push(newAnnouncement);
+            announcementFiles = []; // Geçici dosya deposunu temizle
+            renderAnnouncements();
+            
+            // Modal'ı kapat ve formu temizle
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addAnnouncementModal'));
+            modal.hide();
+            document.getElementById('addAnnouncementForm').reset();
+            document.getElementById('announcementFilePreview').innerHTML = '';
+            
+            alert('Duyuru başarıyla eklendi!');
+        }
+        
+        function generateStudentId() {
+            // Mevcut öğrenci numaralarından en büyüğünü bul ve 1 ekle
+            const maxId = Math.max(...students.map(s => parseInt(s.studentId)));
+            return (maxId + 1).toString();
+        }
+        
+        function generatePassword(name, studentId) {
+            // İsim ve öğrenci numarasına dayalı basit bir şifre
+            return name.toLowerCase().substring(0, 3) + studentId;
+        }
+        
+        function regeneratePassword(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (student) {
+                const newPassword = generatePassword(student.name.toLowerCase(), student.studentId);
+                student.parentPassword = newPassword;
+                
+                renderStudents();
+                renderParentAccessTable();
+                
+                alert(`${student.name} ${student.surname} için yeni şifre: ${newPassword}`);
+            }
+        }
+        
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('tr-TR', options);
+        }
+        
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (student) {
+                // Bu örnekte düzenleme için aynı modal kullanılıyor
+                document.getElementById('studentName').value = student.name;
+                document.getElementById('studentSurname').value = student.surname;
+                document.getElementById('parentName').value = student.parent;
+                document.getElementById('parentPhone').value = student.phone || '';
+                document.getElementById('studentPhoto').value = student.photo;
+                
+                // Öğrenci ID'sini sakla (gerçek uygulamada düzenleme için kullanılır)
+                document.getElementById('addStudentForm').dataset.editId = id;
+                
+                // Modal başlığını değiştir
+                document.getElementById('addStudentModalLabel').textContent = 'Öğrenci Düzenle';
+                
+                // Modal'ı aç
+                const modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+                modal.show();
+            }
+        }
+        
+        function deleteStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (student) {
+                currentDeleteId = id;
+                document.getElementById('deleteConfirmText').textContent = 
+                    `${student.name} ${student.surname} isimli öğrenciyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`;
+                
+                const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+                modal.show();
+            }
+        }
+        
+        function confirmDelete() {
+            if (currentDeleteId) {
+                students = students.filter(s => s.id !== currentDeleteId);
+                // Öğrenciye ait ödevleri ve portfolyo öğelerini de sil
+                assignments = assignments.filter(a => a.studentId !== currentDeleteId);
+                portfolioItems = portfolioItems.filter(p => p.studentId !== currentDeleteId);
+                
+                renderStudents();
+                renderParentAccessTable();
+                renderAssignments();
+                renderPortfolioItems();
+                populateStudentSelects();
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+                modal.hide();
+                
+                alert('Öğrenci başarıyla silindi!');
+            }
+        }
+
+        // Bootstrap tab ayarları
+        const triggerTabList = document.querySelectorAll('#teacherTabs button')
+        triggerTabList.forEach(triggerEl => {
+            new bootstrap.Tab(triggerEl)
+        })
+    </script>
+</body>
+</html>
